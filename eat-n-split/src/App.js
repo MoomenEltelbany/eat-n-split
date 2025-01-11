@@ -23,15 +23,20 @@ const initialFriends = [
 ];
 
 function App() {
+    const [friendsList, setFriendsList] = useState(initialFriends);
+
     return (
         <main className="container">
-            <FriendsList />
+            <FriendsList
+                friendsList={friendsList}
+                setFriendsList={setFriendsList}
+            />
             <SplitBill />
         </main>
     );
 }
 
-function FriendsList() {
+function FriendsList({ friendsList, setFriendsList }) {
     const [addFriendForm, setAddFriendForm] = useState(false);
 
     function handleIsActive() {
@@ -40,7 +45,7 @@ function FriendsList() {
 
     return (
         <section className="friends-list">
-            {initialFriends.map((friend) => {
+            {friendsList.map((friend) => {
                 return (
                     <FriendCard
                         name={friend.name}
@@ -53,7 +58,11 @@ function FriendsList() {
             <Button onAddFriendForm={handleIsActive}>
                 {addFriendForm ? "Close Form" : "Add Friend"}
             </Button>
-            <AddFriendForm addFriendForm={addFriendForm} />
+            <AddFriendForm
+                addFriendForm={addFriendForm}
+                friendsList={friendsList}
+                setFriendsList={setFriendsList}
+            />
         </section>
     );
 }
@@ -64,29 +73,49 @@ function FriendCard({ name, image, balance }) {
             <img src={image} alt="Friend's" />
             <div className="friend-info">
                 <p className="name">{name}</p>
-                <p className="money-state">Your balance is {balance}€</p>
+                <p className="money-state">You and {name} are even</p>
             </div>
             <Button>Close</Button>
         </div>
     );
 }
 
-function AddFriendForm({ addFriendForm }) {
+function AddFriendForm({ addFriendForm, setFriendsList }) {
+    const [friendName, setFriendName] = useState("");
+    const [friendImage, setFriendImage] = useState("https://i.pravatar.cc/48");
+
+    function handleAddFriendList() {
+        const newFriend = {
+            name: friendName,
+            image: friendImage,
+            balance: 0,
+            id: `${friendName}-${friendImage}`,
+        };
+
+        setFriendsList((friends) => [...friends, newFriend]);
+
+        setFriendName("");
+    }
     return (
         <form style={{ display: addFriendForm ? "block" : "none" }}>
             <div>
                 <label>Friend's name 😍?</label>
-                <input type="text" placeholder="Friend's name ..." />
+                <input
+                    type="text"
+                    placeholder="Friend's name ..."
+                    value={friendName}
+                    onChange={(e) => setFriendName(e.target.value)}
+                />
             </div>
             <div>
                 <label>Friend's photo 📸?</label>
                 <input
                     type="text"
                     placeholder="Friend's photo ..."
-                    value="https://i.pravatar.cc/48"
+                    value={friendImage}
                 />
             </div>
-            <Button>Confirm</Button>
+            <Button onAddFriendList={handleAddFriendList}>Confirm</Button>
         </form>
     );
 }
@@ -123,8 +152,14 @@ function SplitBill() {
     );
 }
 
-function Button({ children, onAddFriendForm }) {
-    return <button onClick={onAddFriendForm}>{children}</button>;
+function Button({ children, onAddFriendForm, onAddFriendList }) {
+    function handleClick(e) {
+        e.preventDefault();
+        if (onAddFriendForm) onAddFriendForm();
+        if (onAddFriendList) onAddFriendList();
+    }
+
+    return <button onClick={(e) => handleClick(e)}>{children}</button>;
 }
 
 export default App;
