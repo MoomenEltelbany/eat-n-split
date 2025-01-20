@@ -24,19 +24,28 @@ const initialFriends = [
 
 function App() {
     const [friendsList, setFriendsList] = useState(initialFriends);
+    const [activeSplitBillForm, setActiveSplitBillForm] = useState(false);
+    const [chosenFriend, setChosenFriend] = useState("");
 
     return (
         <main className="container">
             <FriendsList
                 friendsList={friendsList}
                 setFriendsList={setFriendsList}
+                setActiveSplitBillForm={setActiveSplitBillForm}
+                activeSplitBillForm={activeSplitBillForm}
             />
-            <SplitBill />
+            <SplitBill activeSplitBillForm={activeSplitBillForm} />
         </main>
     );
 }
 
-function FriendsList({ friendsList, setFriendsList }) {
+function FriendsList({
+    friendsList,
+    setFriendsList,
+    setActiveSplitBillForm,
+    activeSplitBillForm,
+}) {
     const [addFriendForm, setAddFriendForm] = useState(false);
 
     function handleIsActive() {
@@ -52,6 +61,8 @@ function FriendsList({ friendsList, setFriendsList }) {
                         image={friend.image}
                         balance={friend.balance}
                         key={friend.id}
+                        setActiveSplitBillForm={setActiveSplitBillForm}
+                        activeSplitBillForm={activeSplitBillForm}
                     />
                 );
             })}
@@ -67,7 +78,13 @@ function FriendsList({ friendsList, setFriendsList }) {
     );
 }
 
-function FriendCard({ name, image, balance }) {
+function FriendCard({
+    name,
+    image,
+    balance,
+    setActiveSplitBillForm,
+    activeSplitBillForm,
+}) {
     return (
         <div className="friend-data">
             <img src={image} alt="Friend's" />
@@ -75,7 +92,9 @@ function FriendCard({ name, image, balance }) {
                 <p className="name">{name}</p>
                 <p className="money-state">You and {name} are even</p>
             </div>
-            <Button>Close</Button>
+            <Button setActiveSplitBillForm={setActiveSplitBillForm}>
+                {activeSplitBillForm ? "Close" : "Select"}
+            </Button>
         </div>
     );
 }
@@ -120,43 +139,53 @@ function AddFriendForm({ addFriendForm, setFriendsList }) {
     );
 }
 
-function SplitBill() {
+function SplitBill({ activeSplitBillForm }) {
     return (
-        <aside>
-            <h2>Split a bill with (Clark)</h2>
-            <div>
-                💸
-                <label>Bill Value</label>
-                <input type="number" />
-            </div>
-            <div>
-                🧍🏻‍♂️
-                <label>Your expense</label>
-                <input type="number" />
-            </div>
-            <div>
-                👫
-                <label>Clark's expense</label>
-                <input type="number" disabled />
-            </div>
-            <div>
-                🤑
-                <label>Who's paying the bell?</label>
-                <select>
-                    <option value="you">You</option>
-                    <option value="other">Clark</option>
-                </select>
-            </div>
-            <Button>Split Bill</Button>
-        </aside>
+        <>
+            {activeSplitBillForm && (
+                <aside>
+                    <h2>Split a bill with (Clark)</h2>
+                    <div>
+                        💸
+                        <label>Bill Value</label>
+                        <input type="number" />
+                    </div>
+                    <div>
+                        🧍🏻‍♂️
+                        <label>Your expense</label>
+                        <input type="number" />
+                    </div>
+                    <div>
+                        👫
+                        <label>Clark's expense</label>
+                        <input type="number" disabled />
+                    </div>
+                    <div>
+                        🤑
+                        <label>Who's paying the bell?</label>
+                        <select>
+                            <option value="you">You</option>
+                            <option value="other">Clark</option>
+                        </select>
+                    </div>
+                    <Button>Split Bill</Button>
+                </aside>
+            )}
+        </>
     );
 }
 
-function Button({ children, onAddFriendForm, onAddFriendList }) {
+function Button({
+    children,
+    onAddFriendForm,
+    onAddFriendList,
+    setActiveSplitBillForm,
+}) {
     function handleClick(e) {
         e.preventDefault();
         if (onAddFriendForm) onAddFriendForm();
         if (onAddFriendList) onAddFriendList();
+        if (setActiveSplitBillForm) setActiveSplitBillForm((prev) => !prev);
     }
 
     return <button onClick={(e) => handleClick(e)}>{children}</button>;
