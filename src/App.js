@@ -29,6 +29,7 @@ export default function App() {
         <main className="app">
             <aside className="sidebar">
                 <FriendList friendsList={friendsList} />
+                <FormAddFriend />
             </aside>
         </main>
     );
@@ -51,17 +52,27 @@ function FriendData({ friend }) {
             <h3>{friend.name}</h3>
             {friend.balance < 0 && (
                 <p className="red">
-                    You owe ${friend.name} ${friend.balance}
+                    You owe {friend.name} ${Math.abs(friend.balance)}
                 </p>
             )}
             {friend.balance > 0 && (
-                <p className="red">
+                <p className="green">
                     {friend.name} owes you ${friend.balance}
                 </p>
             )}
-            {friend.balance < 0 && (
-                <p className="red">You and {friend.name} are even</p>
-            )}
+            {friend.balance === 0 && <p>You and {friend.name} are even</p>}
         </li>
+    );
+}
+
+function FormAddFriend() {
+    return (
+        <form className="form-add-friend">
+            <label>🧑🏻‍🎄 Name</label>
+            <input type="text" placeholder="Friend's name" />
+
+            <label>🌄 Image</label>
+            <input type="text" placeholder="Friend's image" />
+        </form>
     );
 }
