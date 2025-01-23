@@ -1,6 +1,9 @@
 import { useState } from "react";
 import "./index.css";
 
+// Todo: Handle the Select buttons and how to toggle them
+// Todo: Update the name in the bill automatically
+
 const initialFriends = [
     {
         id: 118836,
@@ -46,8 +49,9 @@ export default function App() {
     }
 
     function handleSelectedFriend(friend) {
+        // setSelectedFriend(friend);
+        setSelectedFriend((cur) => (cur?.id === friend.id ? null : friend));
         setShowSplitForm((show) => !show);
-        console.log(friend);
     }
 
     return (
@@ -56,6 +60,7 @@ export default function App() {
                 <FriendList
                     friendsList={friendsList}
                     onSelection={handleSelectedFriend}
+                    selectedFriend={selectedFriend}
                 />
                 {showAddForm && <FormAddFriend onAddFriend={handleAddFriend} />}
                 <Button onClick={handleAddForm}>
@@ -67,22 +72,26 @@ export default function App() {
     );
 }
 
-function FriendList({ friendsList, onSplitForm, onSelection }) {
+function FriendList({ friendsList, onSelection, selectedFriend }) {
     return (
         <ul>
             {friendsList.map((friend) => (
                 <FriendData
                     key={friend.id}
                     friend={friend}
-                    onSplitForm={onSplitForm}
                     onSelection={onSelection}
+                    selectedFriend={selectedFriend}
                 />
             ))}
         </ul>
     );
 }
 
-function FriendData({ friend, onSelection }) {
+function FriendData({ friend, onSelection, selectedFriend }) {
+    const isSelected = friend.id === selectedFriend?.id;
+
+    console.log(isSelected);
+
     return (
         <li>
             <img src={friend.image} alt={friend.name} />
@@ -98,7 +107,9 @@ function FriendData({ friend, onSelection }) {
                 </p>
             )}
             {friend.balance === 0 && <p>You and {friend.name} are even</p>}
-            <Button onClick={() => onSelection(friend)}>Select</Button>
+            <Button onClick={() => onSelection(friend)}>
+                {isSelected ? "Close" : "Select"}
+            </Button>
         </li>
     );
 }
