@@ -61,6 +61,10 @@ export default function App() {
         setShowAddForm(false);
     }
 
+    function handleSplitBill(value) {
+        console.log(value);
+    }
+
     return (
         <main className="app">
             <section className="sidebar">
@@ -74,7 +78,12 @@ export default function App() {
                     {showAddForm ? "Close" : "Add Friend"}
                 </Button>
             </section>
-            {showSplitForm && <FormSplitBill selectedFriend={selectedFriend} />}
+            {showSplitForm && (
+                <FormSplitBill
+                    selectedFriend={selectedFriend}
+                    onSplitBill={handleSplitBill}
+                />
+            )}
         </main>
     );
 }
@@ -162,12 +171,25 @@ function FormAddFriend({ onAddFriend }) {
     );
 }
 
-function FormSplitBill({ selectedFriend }) {
+function FormSplitBill({ selectedFriend, onSplitBill }) {
     const [totalAmount, setTotalAmount] = useState("");
     const [userExpense, setUserExpense] = useState("");
+    const [paidByWho, setPaidByWho] = useState("user");
+
+    function splitBill(e) {
+        e.preventDefault();
+
+        if (!totalAmount) return;
+
+        if (paidByWho === "user") {
+            onSplitBill(totalAmount - userExpense);
+        } else {
+            onSplitBill(-userExpense);
+        }
+    }
 
     return (
-        <form className="form-split-bill">
+        <form className="form-split-bill" onSubmit={(e) => splitBill(e)}>
             <h2>Split a bill with {selectedFriend.name}</h2>
 
             <label>💰 Bill value</label>
@@ -191,17 +213,13 @@ function FormSplitBill({ selectedFriend }) {
             />
 
             <label>👫 {selectedFriend.name}'s expense: </label>
-            <input
-                type="text"
-                disabled
-                value={
-                    // userExpense > totalAmount ? 0 : totalAmount - userExpense
-                    totalAmount - userExpense
-                }
-            />
+            <input type="text" disabled value={totalAmount - userExpense} />
 
             <label>🤑 Who is paying the bill? </label>
-            <select>
+            <select
+                value={paidByWho}
+                onChange={(e) => setPaidByWho(e.target.value)}
+            >
                 <option value="user">You</option>
                 <option value="friend">{selectedFriend.name}</option>
             </select>
