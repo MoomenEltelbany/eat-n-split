@@ -187,7 +187,13 @@ function FormSplitBill({ selectedFriend }) {
             <input
                 type="text"
                 value={userExpense}
-                onChange={(e) => setUserExpense(Number(e.target.value))}
+                onChange={(e) =>
+                    setUserExpense(
+                        Number(e.target.value) > totalAmount
+                            ? totalAmount
+                            : Number(e.target.value)
+                    )
+                }
             />
 
             <label>👫 {selectedFriend.name}'s expense: </label>
@@ -195,7 +201,8 @@ function FormSplitBill({ selectedFriend }) {
                 type="text"
                 disabled
                 value={
-                    userExpense > totalAmount ? 0 : totalAmount - userExpense
+                    // userExpense > totalAmount ? 0 : totalAmount - userExpense
+                    totalAmount - userExpense
                 }
             />
 
