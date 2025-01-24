@@ -42,16 +42,23 @@ export default function App() {
     function handleAddForm() {
         setShowAddForm((show) => !show);
         setShowSplitForm(false);
+        setSelectedFriend(null);
     }
 
     function handleAddFriend(friend) {
         setFriendsList((friends) => [...friends, friend]);
+        setShowAddForm(false);
     }
 
     function handleSelectedFriend(friend) {
-        // setSelectedFriend(friend);
         setSelectedFriend((cur) => (cur?.id === friend.id ? null : friend));
+
+        if (friend?.id !== selectedFriend?.id) {
+            setShowSplitForm(null);
+        }
+
         setShowSplitForm((show) => !show);
+        setShowAddForm(false);
     }
 
     return (
@@ -90,8 +97,6 @@ function FriendList({ friendsList, onSelection, selectedFriend }) {
 function FriendData({ friend, onSelection, selectedFriend }) {
     const isSelected = friend.id === selectedFriend?.id;
 
-    console.log(isSelected);
-
     return (
         <li>
             <img src={friend.image} alt={friend.name} />
@@ -120,6 +125,8 @@ function FormAddFriend({ onAddFriend }) {
 
     function handleAddFriend(e) {
         e.preventDefault();
+
+        if (!name) return;
 
         const friend = {
             name,
@@ -156,18 +163,41 @@ function FormAddFriend({ onAddFriend }) {
 }
 
 function FormSplitBill({ selectedFriend }) {
+    const [totalAmount, setTotalAmount] = useState("");
+    const [userExpense, setUserExpense] = useState("");
+
+    const friendExpense = function (totalAmount, userExpense) {
+        if (userExpense > totalAmount) return totalAmount;
+
+        return totalAmount - userExpense;
+    };
+
     return (
         <form className="form-split-bill">
             <h2>Split a bill with {selectedFriend.name}</h2>
 
             <label>💰 Bill value</label>
-            <input type="text" />
+            <input
+                type="text"
+                value={totalAmount}
+                onChange={(e) => setTotalAmount(Number(e.target.value))}
+            />
 
             <label>🧍🏻 Your expense: </label>
-            <input type="text" />
+            <input
+                type="text"
+                value={userExpense}
+                onChange={(e) => setUserExpense(Number(e.target.value))}
+            />
 
             <label>👫 {selectedFriend.name}'s expense: </label>
-            <input type="text" disabled />
+            <input
+                type="text"
+                disabled
+                value={
+                    userExpense > totalAmount ? 0 : totalAmount - userExpense
+                }
+            />
 
             <label>🤑 Who is paying the bill? </label>
             <select>
