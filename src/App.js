@@ -62,7 +62,13 @@ export default function App() {
     }
 
     function handleSplitBill(value) {
-        console.log(value);
+        setFriendsList((friends) =>
+            friends.map((friend) =>
+                friend.id === selectedFriend.id
+                    ? { ...friend, balance: friend.balance + value }
+                    : friend
+            )
+        );
     }
 
     return (
@@ -186,6 +192,10 @@ function FormSplitBill({ selectedFriend, onSplitBill }) {
         } else {
             onSplitBill(-userExpense);
         }
+
+        setTotalAmount("");
+        setUserExpense("");
+        setPaidByWho("user");
     }
 
     return (
