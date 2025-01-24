@@ -1,9 +1,6 @@
 import { useState } from "react";
 import "./index.css";
 
-// Todo: Handle the Select buttons and how to toggle them
-// Todo: Update the name in the bill automatically
-
 const initialFriends = [
     {
         id: 118836,
