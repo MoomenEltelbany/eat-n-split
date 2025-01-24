@@ -166,12 +166,6 @@ function FormSplitBill({ selectedFriend }) {
     const [totalAmount, setTotalAmount] = useState("");
     const [userExpense, setUserExpense] = useState("");
 
-    const friendExpense = function (totalAmount, userExpense) {
-        if (userExpense > totalAmount) return totalAmount;
-
-        return totalAmount - userExpense;
-    };
-
     return (
         <form className="form-split-bill">
             <h2>Split a bill with {selectedFriend.name}</h2>
